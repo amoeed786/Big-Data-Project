@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Data Visualizations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Reset some default styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7fb;
+            color: #333;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        header nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header .logo-container .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        
+        header .nav-links {
+            list-style: none;
+            display: flex;
+        }
+        
+        header .nav-links li {
+            margin-left: 30px;
+        }
+        
+        header .nav-links li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        header .nav-links li a:hover {
+            color: #17a2b8;
+        }
+        
+        /* Main Content Styles */
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+        
+        /* Headings */
+        h1 {
+            font-size: 32px;
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        h3 {
+            font-size: 24px;
+            color: #343a40;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            margin-bottom: 30px;
+        }
+        
+        canvas {
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100% !important;
+            height: auto !important;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 60px;
+        }
+        
+        footer p {
+            font-size: 14px;
+        }
+        
+        /* Small screen (mobile) adjustments */
+        @media (max-width: 768px) {
+            header nav {
+                flex-direction: column;
+                text-align: center;
+            }
+        
+            header .nav-links {
+                flex-direction: column;
+                margin-top: 20px;
+            }
+        
+            header .nav-links li {
+                margin: 10px 0;
+            }
+        
+            .container {
+                padding: 20px;
+            }
+        
+            h1 {
+                font-size: 28px;
+            }
+        
+            h3 {
+                font-size: 20px;
+            }
+        }
+        </style>
+        
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo-container">
+                <h1 class="logo">Crime Analysis</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/visualisations">Visualisations</a></li>
+                <li><a href="/query">Query</a></li> <!-- Added Query Tab -->
+            </ul>
+        </nav>
+    </header>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Crime Data Visualizations</h1>
+
+        <!-- Annual Crime Trends -->
+        <div class="chart-container">
+            <h3 class="chart-title">Annual Crime Trends</h3>
+            <canvas id="annualTrendChart"></canvas>
+        </div>
+
+        <!-- Arrest Rate by Crime Type -->
+
+
+        <!-- Hourly Crime Distribution -->
+        <div class="chart-container">
+            <h3 class="chart-title">Hourly Crime Distribution</h3>
+            <canvas id="hourlyCrimeChart"></canvas>
+        </div>
+
+        <!-- Crime by Day of Week -->
+        <div class="chart-container">
+            <h3 class="chart-title">Crime by Day of the Week</h3>
+            <canvas id="dayOfWeekChart"></canvas>
+        </div>
+
+        <!-- Crime Type by Month -->
+        <div class="chart-container">
+            <h3 class="chart-title">Crime Type by Month</h3>
+            <canvas id="crimeByMonthChart"></canvas>
+        </div>
+
+        <!-- Arrest by Year -->
+        <div class="chart-container">
+            <h3 class="chart-title">Arrest by Year</h3>
+            <canvas id="arrestByYearChart"></canvas>
+        </div>
+
+        <!-- Community Crime Distribution -->
+
+    </div>
+
+    <script>
+        // Fetching data from the API
+        async function fetchData(endpoint) {
+            const response = await fetch(endpoint);
+            const data = await response.json();
+            console.log(`Data from ${endpoint}:`, data);  // Log the data to the console for debugging
+            return data;
+        }
+
+        // Rendering the Annual Crime Trend Chart
+        fetchData('/api/annual_trends').then(data => {
+            const years = data.map(item => item.Year);
+            const counts = data.map(item => item.count);
+
+            const ctx = document.getElementById('annualTrendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Crime Count',
+                        data: counts,
+                        borderColor: 'rgb(75, 192, 192)',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { 
+                            beginAtZero: true 
+                        },
+                        y: { 
+                            beginAtZero: true 
+                        }
+                    }
+                }
+            });
+        });
+
+        // Rendering the Arrest Rate by Crime Type Chart
+        fetchData('/api/arrest_rate_crime').then(data => {
+            const crimeTypes = data.map(item => item['Primary Type']);
+            const arrestRates = data.map(item => item['Arrest Rate']);
+
+            const ctx = document.getElementById('arrestRateChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: crimeTypes,
+                    datasets: [{
+                        label: 'Arrest Rate',
+                        data: arrestRates,
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+
+        // Rendering the Hourly Crime Distribution Chart
+        fetchData('/api/hourly_crime').then(data => {
+            const hours = data.map(item => item.Hour);
+            const counts = data.map(item => item.count);
+
+            const ctx = document.getElementById('hourlyCrimeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Crime Count per Hour',
+                        data: counts,
+                        borderColor: 'rgb(255, 99, 132)',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                }
+            });
+        });
+
+        // Rendering the Crime by Day of Week Chart
+        fetchData('/api/day_of_week').then(data => {
+            const daysOfWeek = data.map(item => item.DayOfWeek);
+            const counts = data.map(item => item.count);
+
+            const ctx = document.getElementById('dayOfWeekChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: daysOfWeek,
+                    datasets: [{
+                        label: 'Crime Count by Day of Week',
+                        data: counts,
+                        backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                }
+            });
+        });
+
+        // Rendering the Crime Type by Month Chart
+        fetchData('/api/crime_by_month').then(data => {
+            const months = data.map(item => item.Month);
+            const counts = data.map(item => item.count);
+
+            const ctx = document.getElementById('crimeByMonthChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Crime Count by Month',
+                        data: counts,
+                        borderColor: 'rgb(54, 162, 235)',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                }
+            });
+        });
+
+        // Rendering the Arrest by Year Chart
+        fetchData('/api/arrest_by_year').then(data => {
+            const years = data.map(item => item.Year);
+            const arrests = data.map(item => item.Arrests);
+            const totalCrimes = data.map(item => item.Total_Crimes);
+            const arrestRates = data.map(item => item.Arrest_Rate);
+
+            const ctx = document.getElementById('arrestByYearChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Arrests',
+                            data: arrests,
+                            borderColor: 'rgb(75, 192, 192)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Total Crimes',
+                            data: totalCrimes,
+                            borderColor: 'rgb(255, 99, 132)',
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Arrest Rate',
+                            data: arrestRates,
+                            borderColor: 'rgb(54, 162, 235)',
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                }
+            });
+        });
+
+        // Rendering the Community Crime Distribution Chart
+        fetchData('/api/community_by_crime').then(data => {
+            const communityAreas = data.map(item => item['Community Area']);
+            const counts = data.map(item => item.count);
+
+            const ctx = document.getElementById('communityCrimeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: communityAreas,
+                    datasets: [{
+                        label: 'Crime Count by Community Area',
+                        data: counts,
+                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                }
+            });
+        });
+    </script>
+</body>
+</html>

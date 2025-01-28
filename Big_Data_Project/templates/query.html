@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Crime Prediction</title>
+    <link rel="stylesheet" href="/static/css/styles2.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo-container">
+                <h1 class="logo">Crime Analysis</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/visualisations">Visualisations</a></li>
+                <li><a href="/query">Query</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="query-form">
+            <h2>Query Crime Prediction Risk Level</h2>
+            <form method="POST" action="/query">
+                <label for="community_area">Community Area:</label>
+                <input type="text" id="community_area" name="community_area" required>
+
+                <button type="submit">Get Risk Level</button>
+            </form>
+        </section>
+
+        {% if community_area %}
+        <section class="query-results">
+            <h3>Prediction for Community Area: {{ community_area }}</h3>
+            {% if risk_level %}
+                <p>The Risk Level for {{ community_area }} is <strong>{{ risk_level }}</strong>.</p>
+            {% else %}
+                <p>No prediction available for this community area.</p>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        {% if error_message %}
+        <section class="query-error">
+            <p style="color: red;">{{ error_message }}</p>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Crime Analysis Dashboard. All rights reserved.</p>
+    </footer>
+</body>
+</html>

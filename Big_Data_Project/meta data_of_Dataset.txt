@@ -1,0 +1,19 @@
+ID: A unique identifier for each crime record.
+Case Number: A unique identifier for the crime case.
+Date: The timestamp when the crime was reported.
+Block: The address block where the crime took place (e.g., street name and number).
+IUCR: The Illinois Uniform Crime Reporting code, which categorizes the crime type.
+Primary Type: The broad category of the crime (e.g., theft, assault).
+Description: A more detailed description of the crime.
+Location Description: The place where the crime occurred (e.g., residence, street).
+Arrest: Indicates if an arrest was made (True/False).
+Domestic: Whether the crime involved domestic issues (True/False).
+Beat: The police beat in which the crime occurred (a geographic area patrolled by police).
+District: The police district where the crime was reported.
+Ward: The city ward (political divisions) of the crime location.
+Community Area: A neighborhood or community area in the city.
+FBI Code: The FBI classification code for the crime.
+X Coordinate, Y Coordinate, Latitude, Longitude: Geographical coordinates of the crime location.
+Location: The specific location, which could be a set of coordinates or a general address.
+Year: The year the crime occurred.
+Updated On: The timestamp when the data was last updated.
