@@ -65,7 +65,7 @@ For Dataset you can use below link to download it first.
 1. Load the dataset into the project directory.
 2. Run Pyspark_scripty script:
    ```bash
-   python Pyspark_scripty.py
+   python Pyspark_script.py
    ```
 3. Make sure to config Hadoop Setup as well.
 4. Perform analysis using the provided Jupyter notebooks.
